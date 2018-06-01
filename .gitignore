@@ -11,6 +11,7 @@
 !README.md
 !CODE_OF_CONDUCT.md  
 !CONTRIBUTING.md
+!Jenkins_setup.md
 
 # Don't ignore pullapprove yaml file
 .pullapprove.yml
@@ -29,3 +30,7 @@ jenkins/org.jenkinsci.plugins.cloudstats.CloudStatistics.xml
 
 # Ignore Jenkins credentials
 jenkins/credentials.xml
+
+# Include the pictures
+!pictures
+!pictures/**
