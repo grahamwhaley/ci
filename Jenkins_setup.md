@@ -42,6 +42,24 @@ to trigger on changes (more efficient than polling). Kata Containers integrates 
 using the [katacontainersbot](https://github.com/katacontainersbot) user. Please discuss
 your requirements with the Kata Containers team who will then make the appropriate changes.
 
+Test image one:
+![Jenkins GHPRB plugin trigger config](pictures/ghprb_trigger.png)
+
+Test image two: ![Jenkins GHPRB plugin trigger config](pictures/ghprb_trigger.png)
+
+Test image three:
+  ![Jenkins GHPRB plugin trigger config](pictures/ghprb_trigger.png)
+
+Test image four:
+    ![Jenkins GHPRB plugin trigger config](pictures/ghprb_trigger.png)
+
+Test image five:
+- ![Jenkins GHPRB plugin trigger config](pictures/ghprb_trigger.png)
+
+Test image six:
+* ![Jenkins GHPRB plugin trigger config](pictures/ghprb_trigger.png)
+
+
 Set the GHPRB triggers similar to the following:
 ![Jenkins GHPRB plugin trigger config](pictures/ghprb_trigger.png)
 
