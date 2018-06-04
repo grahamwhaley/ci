@@ -66,6 +66,12 @@ Set the GHPRB triggers similar to the following:
 Set the GHPRB `Trigger Setup` further options similar to the following:
 ![Jenkins GHPRB plugin trigger setup config](pictures/ghprb_adv_triggers.png)
 
+* Set the GHPRB triggers similar to the following:
+![Jenkins GHPRB plugin trigger config](pictures/ghprb_trigger.png)
+
+* Set the GHPRB `Trigger Setup` further options similar to the following:
+![Jenkins GHPRB plugin trigger setup config](pictures/ghprb_adv_triggers.png)
+
 ### Master builds
 
 Master branch builds are tracked with the Jenkins [git Source Code Management](https://plugins.jenkins.io/git)
