@@ -42,3 +42,7 @@ jenkins/credentials.xml
 # Include the deployment files
 !deployment
 !deployment/**
+
+# Don't ignore our Jenkins pipeline files
+!Jenkinsfile
+!Jenkins.yaml

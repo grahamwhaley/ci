@@ -1,0 +1,91 @@
+#
+# Copyright (c) 2019 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+#
+# Define the matrix of which CI tests get run on which repo/distro
+# combinations via the Jenkins pipeline defined in the Jenkinsfile.
+#
+# The structure is:
+#   repo:
+#     distro:
+#       type: which phase to run this distro in
+#       env: list of env settings to inject whilst running stages
+#       test:
+#         name: name shown in stage
+#           commands: list of commands to run in this stage
+#
+
+---
+# Phases to process, in the order we want them processed.
+# The names of the phases align with the 'type' fields of the distros under
+# the repos
+phases:
+  - "static"
+  - "primary"
+  - "secondary"
+
+# Repos to process
+kata-containers/runtime:
+  master:
+    type: "primary"
+    env:
+      - "GOPATH=${env.WORKSPACE/go}"
+      - "PATH+=/usr/local/go/bin"
+      - "RUNTIME=kata-runtime"
+    tests:
+      - name: setup
+        commands:
+          - "env"
+          - "echo Doing setup"
+          - "git clone https://${tests_repo}.git ${tests_repo_dir} || true"
+          # We hack METRICS_CI=true below to stop it running all the tests by
+          # default, as we want to run them in individual stages
+          - >-
+            cd ${env.GOPATH}/src/${tests_repo};
+            export METRICS_CI=true;
+            export CRI_CONTAINERD="no";
+            export KUBERNETES="no";
+            export CRIO="no";
+            export OPENSHIFT="no";
+            bash -x .ci/jenkins_job_build.sh github.com/kata-containers/runtime
+      - name: check
+        commands:
+          - >-
+            cd ${env.GOPATH}/src/${tests_repo};
+            sudo -E PATH="$PATH" bash -c "make check"
+      - name: docker
+        commands:
+          - >-
+            cd ${env.GOPATH}/src/${tests_repo};
+            sudo -E PATH="$PATH" bash -c "make docker"
+  ubuntu1804_azure:
+    type: "secondary"
+    tests:
+      - name: setup
+        commands:
+          - "env"
+          - "echo Doing setup on [$NODE_NAME]}"
+          - "git clone https://${tests_repo}.git ${tests_repo_dir} || true"
+          # We hack METRICS_CI=true below to stop it running all the tests by
+          # default, as we want to run them in individual stages
+          - >-
+            cd ${env.GOPATH}/src/${tests_repo};
+            export METRICS_CI=true;
+            export CRI_CONTAINERD="no";
+            export KUBERNETES="no";
+            export CRIO="no";
+            export OPENSHIFT="no";
+            bash -x .ci/jenkins_job_build.sh github.com/kata-containers/runtime
+      - name: check
+        commands:
+          - >-
+            cd ${env.GOPATH}/src/${tests_repo};
+            sudo -E PATH="$PATH" bash -c "make check"
+      - name: docker
+        commands:
+          - >-
+            cd ${env.GOPATH}/src/${tests_repo};
+            sudo -E PATH="$PATH" bash -c "make docker"
+
