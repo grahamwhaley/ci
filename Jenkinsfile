@@ -170,10 +170,12 @@ pipeline {
       agent { label "master" }
       steps {
         withEnv(["GOPATH=${env.WORKSPACE}/go"]) {
+          // || true on checkouts, in case we already pulled the repo as it could be the
+          // one we are testing....
           sh '''
-            git clone "https://${tests_repo}.git" "${GOPATH}/${tests_repo_dir}"
-            git clone "https://${runtime_repo}.git" "${GOPATH}/${runtime_repo_dir}"
-            git clone "https://${ci_repo}.git" "${GOPATH}/${ci_repo_dir}"
+            git clone "https://${tests_repo}.git" "${GOPATH}/${tests_repo_dir}" || true
+            git clone "https://${runtime_repo}.git" "${GOPATH}/${runtime_repo_dir}" || true
+            git clone "https://${ci_repo}.git" "${GOPATH}/${ci_repo_dir}" || true
           '''
         }
       }
