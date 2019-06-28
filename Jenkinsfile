@@ -153,7 +153,9 @@ pipeline {
     stage('checkout PR') {
       agent { label "master" }
       steps {
-        checkout_pr()
+        withEnv(["GOPATH=${env.WORKSPACE}/go"]) {
+          checkout_pr()
+        }
       }
     }
 
