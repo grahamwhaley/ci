@@ -392,10 +392,8 @@ def testrunner(distroName, distroMap) {
         // Clean up any previous workspace - otherwise we can run into some
         // file clashes, like on 'git clone'.
         stage('Clean workspace') {
-          agent { label "master" }
           steps {
             cleanWs()
-          }
         }
 
         stage(key['name']) {
