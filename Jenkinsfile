@@ -388,6 +388,16 @@ def testrunner(distroName, distroMap) {
       // FIXME - would be quite nice if the env data were extracted
       // from the YAML as well.
       withEnv(["GOPATH=${env.WORKSPACE}/go"]) {
+
+        // Clean up any previous workspace - otherwise we can run into some
+        // file clashes, like on 'git clone'.
+        stage('Clean workspace') {
+          agent { label "master" }
+          steps {
+            cleanWs()
+          }
+        }
+
         stage(key['name']) {
           script {
             // Some groovy magic - ensures any 'single entry' command list is turned
