@@ -408,7 +408,7 @@ def testrunner(distroName, distroMap) {
 
 def checkout_pr() {
   echo "Checking out the PR branch"
-  sh "git clone "https://${repo_under_test_repo}.git" "${GOPATH}/${repo_under_test_dir}"
+  sh "git clone https://${repo_under_test_repo}.git ${GOPATH}/${repo_under_test_dir}"
 }
 
 // Place this outside the CPS environment so we can access the getEnvironment() func.
