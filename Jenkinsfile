@@ -394,6 +394,7 @@ def testrunner(distroName, distroMap) {
         stage('Clean workspace') {
           steps {
             cleanWs()
+          }
         }
 
         stage(key['name']) {
