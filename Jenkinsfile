@@ -422,8 +422,8 @@ def checkout_pr() {
   sh '''
     git clone https://${repo_under_test_repo}.git ${GOPATH}/${repo_under_test_dir} || true
     cd ${GOPATH}/${repo_under_test_dir}
-    git fetch origin refs/pull/${ghprbPullId}/head:${ghprbTargetBranch}
-    git checkout ${ghprbTargetBranch}
+    git fetch origin refs/pull/${ghprbPullId}/head:${ghprbSourceBranch}
+    git checkout ${ghprbSourceBranch}
     git branch
     git log --oneline -10
   '''
