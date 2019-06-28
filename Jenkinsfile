@@ -246,7 +246,7 @@ pipeline {
               sh "ls"
               sh "sudo apt update -y -qq"
               sh "sudo apt install -y -qq curl git"
-              sh "(cd ${GOPATH}/${test_repo_dir}; .ci/install_go.sh -p -f)"
+              sh "(cd ${GOPATH}/${ci_repo_dir}; .ci/install_go.sh -p -f)"
               sh "go version"
               sh ".ci/static-checks.sh"
               //sh "make"
