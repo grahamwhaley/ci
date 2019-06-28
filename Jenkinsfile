@@ -154,29 +154,7 @@ pipeline {
       agent { label "master" }
       steps {
         withEnv(["GOPATH=${env.WORKSPACE}/go"]) {
-          checkout_pr()
-        }
-      }
-    }
-
-    // We will always need some of these to run the static checks.
-    // We need to git clone the:
-    // - tests repo so we can use some of its CI scripts
-    // - rutime repo to get the versions.yaml file
-    // - ci repo to get the Jenkins test matrix YAML
-    // FIXME - ideally make this all encoded into the YAML file, including
-    // if a stage is skip-able or not.
-    stage('Setup test repo environment') {
-      agent { label "master" }
-      steps {
-        withEnv(["GOPATH=${env.WORKSPACE}/go"]) {
-          // || true on checkouts, in case we already pulled the repo as it could be the
-          // one we are testing....
-          sh '''
-            git clone "https://${tests_repo}.git" "${GOPATH}/${tests_repo_dir}" || true
-            git clone "https://${runtime_repo}.git" "${GOPATH}/${runtime_repo_dir}" || true
-            git clone "https://${ci_repo}.git" "${GOPATH}/${ci_repo_dir}" || true
-          '''
+          checkout_repos()
         }
       }
     }
@@ -395,6 +373,11 @@ def testrunner(distroName, distroMap) {
           cleanWs()
         }
 
+        // Grab our PR repo and the other repos we need to run the tests.
+        stage('Checkouts') {
+          checkout_repos()
+        }
+
         stage(key['name']) {
           script {
             // Some groovy magic - ensures any 'single entry' command list is turned
@@ -423,7 +406,7 @@ def testrunner(distroName, distroMap) {
   }
 }
 
-def checkout_pr() {
+def checkout_repos() {
   echo "Checking out the PR branch"
   // ||true as the repo may already exist (for instance, we pre-pull test, ci and runtime)
   sh '''
@@ -433,6 +416,9 @@ def checkout_pr() {
     git checkout ${ghprbSourceBranch}
     git branch
     git log --oneline -10
+    git clone "https://${tests_repo}.git" "${GOPATH}/${tests_repo_dir}" || true
+    git clone "https://${runtime_repo}.git" "${GOPATH}/${runtime_repo_dir}" || true
+    git clone "https://${ci_repo}.git" "${GOPATH}/${ci_repo_dir}" || true
   '''
 }
 
