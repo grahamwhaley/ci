@@ -236,7 +236,9 @@ pipeline {
     stage('Static checks') {
       agent { label "master" }
       steps {
-        withEnv(["target_branch=${ghprbTargetBranch}", "GOPATH=${env.WORKSPACE}/go", "PATH+=/usr/local/go/bin"]) {
+        withEnv(["target_branch=${ghprbTargetBranch}",
+          "GOPATH=${env.WORKSPACE}/go",
+          "PATH+=/usr/local/go/bin:${GOPATH}/bin"]) {
           dir("${GOPATH}/${repo_under_test_dir}") {
             script {
               echo "In static check"
