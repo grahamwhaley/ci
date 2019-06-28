@@ -237,7 +237,7 @@ pipeline {
       agent { label "master" }
       steps {
         withEnv(["target_branch=${ghprbTargetBranch}"]) {
-          dir("${GOPATH}/${repo_under_test_dir}") {
+          dir("${env.GOPATH}/${repo_under_test_dir}") {
             script {
               echo "In static check"
               // start with just the basic static check
