@@ -238,7 +238,7 @@ pipeline {
       steps {
         withEnv(["target_branch=${ghprbTargetBranch}",
           "GOPATH=${env.WORKSPACE}/go",
-          "PATH+=/usr/local/go/bin:${env.GOPATH}/bin:XXX"]) {
+          "PATH+=/usr/local/go/bin:${env.WORKSPACE}/go/bin"]) {
           dir("${GOPATH}/${repo_under_test_dir}") {
             script {
               echo "In static check"
