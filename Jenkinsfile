@@ -66,6 +66,9 @@ pipeline {
     ci_repo_name="kata-containers/ci"
     ci_repo="github.com/${ci_repo_name}"
     ci_repo_dir="src/${ci_repo}"
+    repo_under_test="${ghprbGhRepository}"
+    repo_under_test_repo="github.com/${repo_under_test}"
+    repo_under_test_dir="src/${repo_under_test_repo}"
 
     // This has to be a string, so cannot be placed in a global var :-(
     GITHUB_API_TOKEN = credentials('cc70853d-7fac-4976-be2d-093d7d366fb1')
@@ -147,10 +150,10 @@ pipeline {
       }
     }
 
-    stage('checkout scm') {
+    stage('checkout PR') {
       agent { label "master" }
       steps {
-        checkout scm
+        checkout_pr()
       }
     }
 
@@ -230,14 +233,18 @@ pipeline {
       agent { label "master" }
       steps {
         withEnv(["target_branch=${ghprbTargetBranch}"]) {
-          script {
-            echo "In static check"
-            // start with just the basic static check
-            sh "env"
-            sh ".ci/static-checks.sh"
-            //sh "make"
-            //sh "make test"
-            //sh "make install"
+          dir("${GOPATH}/${repo_under_test_dir}") {
+            script {
+              echo "In static check"
+              // start with just the basic static check
+              sh "env"
+              sh "pwd"
+              sh "ls"
+              sh ".ci/static-checks.sh"
+              //sh "make"
+              //sh "make test"
+              //sh "make install"
+            }
           }
         }
       }
@@ -399,8 +406,14 @@ def testrunner(distroName, distroMap) {
   }
 }
 
+def checkout_pr() {
+  echo "Checking out the PR branch"
+  sh "git clone "https://${repo_under_test_repo}.git" "${GOPATH}/${repo_under_test_dir}"
+}
+
 // Place this outside the CPS environment so we can access the getEnvironment() func.
 @NonCPS
 def printEnv() {
   env.getEnvironment().each { name, value -> println "Name: $name -> Value $value" }
 }
+
