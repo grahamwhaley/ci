@@ -236,7 +236,7 @@ pipeline {
     stage('Static checks') {
       agent { label "master" }
       steps {
-        withEnv(["target_branch=${ghprbTargetBranch}", "GOPATH=${env.WORKSPACE}/go"]) {
+        withEnv(["target_branch=${ghprbTargetBranch}", "GOPATH=${env.WORKSPACE}/go", "PATH+=/usr/local/go/bin"]) {
           dir("${GOPATH}/${repo_under_test_dir}") {
             script {
               echo "In static check"
@@ -244,6 +244,10 @@ pipeline {
               sh "env"
               sh "pwd"
               sh "ls"
+              sh "sudo apt update -y -qq"
+              sh "sudo apt install -y -qq curl git"
+              sh "(cd ${GOPATH}/${test_repo_dir}; .ci/install_go.sh -p -f)"
+              sh "go version"
               sh ".ci/static-checks.sh"
               //sh "make"
               //sh "make test"
