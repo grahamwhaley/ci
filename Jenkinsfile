@@ -66,9 +66,14 @@ pipeline {
     ci_repo_name="kata-containers/ci"
     ci_repo="github.com/${ci_repo_name}"
     ci_repo_dir="src/${ci_repo}"
+    // Note - we need to grab the repo under test and check out a branch that
+    // looks like it would if the ghprb had done it, **but**, if we check that
+    // out into the GOPATH, then later our CI scripts try to clone it again,
+    // and then we fail. So, for the purposes of the static checks, clone and
+    // check it out into a tmp dir...
     repo_under_test="${ghprbGhRepository}"
     repo_under_test_repo="github.com/${repo_under_test}"
-    repo_under_test_dir="src/${repo_under_test_repo}"
+    repo_under_test_dir="tmp/${repo_under_test_repo}"
 
     // This has to be a string, so cannot be placed in a global var :-(
     GITHUB_API_TOKEN = credentials('cc70853d-7fac-4976-be2d-093d7d366fb1')
@@ -150,7 +155,7 @@ pipeline {
       }
     }
 
-    stage('checkout PR') {
+    stage('checkouts') {
       agent { label "master" }
       steps {
         withEnv(["GOPATH=${env.WORKSPACE}/go"]) {
@@ -217,7 +222,8 @@ pipeline {
         withEnv(["target_branch=${ghprbTargetBranch}",
           "GOPATH=${env.WORKSPACE}/go",
           "PATH+=/usr/local/go/bin:${env.WORKSPACE}/go/bin"]) {
-          dir("${GOPATH}/${repo_under_test_dir}") {
+          // NOTE - not in the GOPATH, but in a tmpdir
+          dir("${HOME}/${repo_under_test_dir}") {
             script {
               echo "In static check"
               // start with just the basic static check
@@ -410,8 +416,9 @@ def checkout_repos() {
   echo "Checking out the PR branch"
   // ||true as the repo may already exist (for instance, we pre-pull test, ci and runtime)
   sh '''
-    git clone https://${repo_under_test_repo}.git ${GOPATH}/${repo_under_test_dir} || true
-    cd ${GOPATH}/${repo_under_test_dir}
+    mkdir -p ${HOME}/${repo_under_test_dir}
+    git clone https://${repo_under_test_repo}.git ${HOME}/${repo_under_test_dir} || true
+    cd ${HOME}/${repo_under_test_dir}
     git fetch origin refs/pull/${ghprbPullId}/head:${ghprbSourceBranch}
     git checkout ${ghprbSourceBranch}
     git branch
