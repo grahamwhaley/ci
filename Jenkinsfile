@@ -60,20 +60,15 @@ pipeline {
     tests_repo_dir="src/${tests_repo}"
     // We need the runtime repo to get the latest kata versions.yaml file to ensure
     // we install and test with the required tool versions.
-    runtime_repo="github.com/kata-containers/runtime"
-    runtime_repo_dir="src/${runtime_repo}"
+    //runtime_repo="github.com/kata-containers/runtime"
+    //runtime_repo_dir="src/${runtime_repo}"
     // We need the CI repo to get access to the Jenkins.yaml test matrix file.
     ci_repo_name="kata-containers/ci"
     ci_repo="github.com/${ci_repo_name}"
     ci_repo_dir="src/${ci_repo}"
-    // Note - we need to grab the repo under test and check out a branch that
-    // looks like it would if the ghprb had done it, **but**, if we check that
-    // out into the GOPATH, then later our CI scripts try to clone it again,
-    // and then we fail. So, for the purposes of the static checks, clone and
-    // check it out into a tmp dir...
     repo_under_test="${ghprbGhRepository}"
     repo_under_test_repo="github.com/${repo_under_test}"
-    repo_under_test_dir="tmp/${repo_under_test_repo}"
+    repo_under_test_dir="src/${repo_under_test_repo}"
 
     // This has to be a string, so cannot be placed in a global var :-(
     GITHUB_API_TOKEN = credentials('cc70853d-7fac-4976-be2d-093d7d366fb1')
@@ -223,7 +218,7 @@ pipeline {
           "GOPATH=${env.WORKSPACE}/go",
           "PATH+=/usr/local/go/bin:${env.WORKSPACE}/go/bin"]) {
           // NOTE - not in the GOPATH, but in a tmpdir
-          dir("${HOME}/${repo_under_test_dir}") {
+          dir("${GOPATH}/${repo_under_test_dir}") {
             script {
               echo "In static check"
               // start with just the basic static check
@@ -424,7 +419,7 @@ def checkout_repos() {
     git branch
     git log --oneline -10
     git clone "https://${tests_repo}.git" "${GOPATH}/${tests_repo_dir}" || true
-    git clone "https://${runtime_repo}.git" "${GOPATH}/${runtime_repo_dir}" || true
+    //git clone "https://${runtime_repo}.git" "${GOPATH}/${runtime_repo_dir}" || true
     git clone "https://${ci_repo}.git" "${GOPATH}/${ci_repo_dir}" || true
   '''
 }

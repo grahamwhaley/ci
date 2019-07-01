@@ -49,7 +49,7 @@ kata-containers/runtime:
             export KUBERNETES="no";
             export CRIO="no";
             export OPENSHIFT="no";
-            bash -x .ci/jenkins_job_build.sh github.com/kata-containers/runtime
+            bash -x .ci/setup.sh
       - name: check
         commands:
           - >-
@@ -77,7 +77,7 @@ kata-containers/runtime:
             export KUBERNETES="no";
             export CRIO="no";
             export OPENSHIFT="no";
-            bash -x .ci/jenkins_job_build.sh github.com/kata-containers/runtime
+            bash -x .ci/setup.sh
       - name: check
         commands:
           - >-
