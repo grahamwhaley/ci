@@ -60,8 +60,8 @@ pipeline {
     tests_repo_dir="src/${tests_repo}"
     // We need the runtime repo to get the latest kata versions.yaml file to ensure
     // we install and test with the required tool versions.
-    //runtime_repo="github.com/kata-containers/runtime"
-    //runtime_repo_dir="src/${runtime_repo}"
+    runtime_repo="github.com/kata-containers/runtime"
+    runtime_repo_dir="src/${runtime_repo}"
     // We need the CI repo to get access to the Jenkins.yaml test matrix file.
     ci_repo_name="kata-containers/ci"
     ci_repo="github.com/${ci_repo_name}"
@@ -419,7 +419,8 @@ def checkout_repos() {
     git branch
     git log --oneline -10
     git clone "https://${tests_repo}.git" "${GOPATH}/${tests_repo_dir}" || true
-    //git clone "https://${runtime_repo}.git" "${GOPATH}/${runtime_repo_dir}" || true
+    # We need the versions.yaml for the go_install.
+    git clone "https://${runtime_repo}.git" "${GOPATH}/${runtime_repo_dir}" || true
     git clone "https://${ci_repo}.git" "${GOPATH}/${ci_repo_dir}" || true
   '''
 }
