@@ -411,9 +411,9 @@ def checkout_repos() {
   echo "Checking out the PR branch"
   // ||true as the repo may already exist (for instance, we pre-pull test, ci and runtime)
   sh '''
-    mkdir -p ${HOME}/${repo_under_test_dir}
-    git clone https://${repo_under_test_repo}.git ${HOME}/${repo_under_test_dir} || true
-    cd ${HOME}/${repo_under_test_dir}
+    mkdir -p ${GOPATH}/${repo_under_test_dir}
+    git clone https://${repo_under_test_repo}.git ${GOPATH}/${repo_under_test_dir} || true
+    cd ${GOPATH}/${repo_under_test_dir}
     git fetch origin refs/pull/${ghprbPullId}/head:${ghprbSourceBranch}
     git checkout ${ghprbSourceBranch}
     git branch
