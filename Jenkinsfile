@@ -358,6 +358,17 @@ def testrunner(distroName, distroMap) {
     // Extract the list of test commands to run for this distro
     testmap = distroMap['tests']
     echo "testmap looks like ${testmap}"
+
+    // Clean up any previous workspace - otherwise we can run into some
+    // file clashes, like on 'git clone'.
+    stage('Clean workspace') {
+      cleanWs()
+    }
+
+    // Grab our PR repo and the other repos we need to run the tests.
+    stage('Checkouts') {
+      checkout_repos()
+    }
   
     testmap.each { key, value ->
       echo "test key:${key} value:${value}"
@@ -366,19 +377,7 @@ def testrunner(distroName, distroMap) {
       // Setup our env
       // FIXME - would be quite nice if the env data were extracted
       // from the YAML as well.
-      withEnv(["GOPATH=${env.WORKSPACE}/go"]) {
-
-        // Clean up any previous workspace - otherwise we can run into some
-        // file clashes, like on 'git clone'.
-        stage('Clean workspace') {
-          cleanWs()
-        }
-
-        // Grab our PR repo and the other repos we need to run the tests.
-        stage('Checkouts') {
-          checkout_repos()
-        }
-
+      //withEnv(["GOPATH=${env.WORKSPACE}/go"]) {
         stage(key['name']) {
           script {
             // Some groovy magic - ensures any 'single entry' command list is turned
@@ -402,7 +401,7 @@ def testrunner(distroName, distroMap) {
             }
           }
         }
-      }
+      //}
     }
   }
 }
