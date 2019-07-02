@@ -43,6 +43,12 @@ pipeline {
   // as distro or arch specific tests.
   agent none
 
+  options {
+    // we skip the default checkout, so we can clean out the old workspace
+    // (including perms fixes), and then request the checkout ourselves.
+    skipDefaultCheckout true
+  }
+
   // Set up some required environment vars
   environment {
     // Ideally we might think we want to set the GOPATH here, but this env
@@ -90,10 +96,12 @@ pipeline {
 
     // Clean up any previous workspace - otherwise we can run into some
     // file clashes, like on 'git clone'.
-    stage('Clean workspace') {
+    stage('Clean and checkout') {
       agent { label "master" }
       steps {
+        cleanup()
         cleanWs()
+        checkout scm
       }
     }
 
@@ -272,17 +280,6 @@ pipeline {
           echo "jobsmap looks like ${jobsmap}"
           echo "kick it off in parallel"
           parallel jobsmap
-        }
-      }
-    }
-  }
-  // Post-build actions
-  post {
-    always {
-      stage('Cleanup') {
-        agent { label "master" }
-        steps {
-          cleanup()
         }
       }
     }
