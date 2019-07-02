@@ -93,13 +93,13 @@ pipeline {
     stage('Clean workspace') {
       agent { label "master" }
       steps {
-        // chwon/chgrp the workspace to this user so we can delete it, as previous
-        // CI runs may have created root owned files. 
-        script {
-          sh "echo 'may try chown -R ${USER} ${WORKSPACE}'"
-          sh "echo 'may try chgrp -R \$(id -g) ${WORKSPACE}'"
-        }
         cleanWs()
+      }
+    }
+    // Post-build actions
+    post {
+      always {
+        cleanup()
       }
     }
 
@@ -282,6 +282,7 @@ pipeline {
       }
     }
   }
+
 }
 
 // Generate a map of distro:jobfunc from the YAML data,
@@ -338,6 +339,12 @@ def genStage(jobname) {
             // And then run the actual tests as defined in the YAML.
             testrunner(jobname, distromap[jobname])
           }
+        }
+      }
+      // Post-build actions
+      post {
+        always {
+          cleanup()
         }
       }
     }
@@ -428,6 +435,14 @@ def checkout_repos() {
     git clone "https://${runtime_repo}.git" "${GOPATH}/${runtime_repo_dir}" || true
     git clone "https://${ci_repo}.git" "${GOPATH}/${ci_repo_dir}" || true
   '''
+}
+
+def cleanup() {
+  // chwon/chgrp the workspace to this user so we can delete it, as previous
+  // CI runs may have created root owned files. 
+  echo "Cleanup.."
+  sh "echo 'may try chown -R ${USER} ${WORKSPACE}'"
+  sh "echo 'may try chgrp -R \$(id -g) ${WORKSPACE}'"
 }
 
 // Place this outside the CPS environment so we can access the getEnvironment() func.
