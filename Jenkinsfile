@@ -93,6 +93,12 @@ pipeline {
     stage('Clean workspace') {
       agent { label "master" }
       steps {
+        // chwon/chgrp the workspace to this user so we can delete it, as previous
+        // CI runs may have created root owned files. 
+        script {
+          sh "echo 'may try chown -R ${USER} ${WORKSPACE'}"
+          sh "echo 'may try chgrp -R $(id -g) ${WORKSPACE'}"
+        }
         cleanWs()
       }
     }
