@@ -97,7 +97,7 @@ pipeline {
         // CI runs may have created root owned files. 
         script {
           sh "echo 'may try chown -R ${USER} ${WORKSPACE}'"
-          sh "echo 'may try chgrp -R $(id -g) ${WORKSPACE}'"
+          sh "echo 'may try chgrp -R \$(id -g) ${WORKSPACE}'"
         }
         cleanWs()
       }
