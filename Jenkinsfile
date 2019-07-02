@@ -96,12 +96,6 @@ pipeline {
         cleanWs()
       }
     }
-    // Post-build actions
-    post {
-      always {
-        cleanup()
-      }
-    }
 
     // Do some prechecks. Check that we really do need to run the CI tests on this
     // PR.
@@ -282,7 +276,17 @@ pipeline {
       }
     }
   }
-
+  // Post-build actions
+  post {
+    always {
+      stage('Cleanup') {
+        agent { label "master" }
+        steps {
+          cleanup()
+        }
+      }
+    }
+  }
 }
 
 // Generate a map of distro:jobfunc from the YAML data,
@@ -341,12 +345,9 @@ def genStage(jobname) {
           }
         }
       }
-      // Post-build actions
-      post {
-        always {
-          cleanup()
-        }
-      }
+      // FIXME - really could do with a post-action cleanup here, but
+      // it looks like you can only attach that to 'stages', not each
+      // stage - so, how does that work with 'agent'??
     }
   }
 }
